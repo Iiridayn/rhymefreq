@@ -3,37 +3,44 @@
 rhyme_families_enhanced.py
 ══════════════════════════
 Builds ranked rhyme family lists for English, classified by rhyme type:
-  • masculine  — stress falls on the final syllable        ("return / concern")
-  • feminine   — stress on penultimate, one trailing syllable ("lover / cover")
-  • dactylic   — stress on antepenultimate or earlier      ("flattery / battery")
+  • masculine  — stress on the final syllable            ("return / concern")
+  • feminine   — stress on penultimate; one trailing syl  ("lover / cover")
+  • dactylic   — two or more unstressed syllables follow  ("flattery / battery")
 
 Datasets (all free/open):
   ┌─ CMUdict ───────────────────────────────────────────────────────────────────┐
-  │  Auto-downloaded by NLTK, or directly:                                     │
+  │  Auto-downloaded by NLTK on first run, or directly from:                   │
   │  https://github.com/cmusphinx/cmudict/raw/master/cmudict.dict              │
-  │  NLTK mirror: auto-fetched on first run by nltk.download('cmudict')        │
   └────────────────────────────────────────────────────────────────────────────┘
   ┌─ WordFreq ──────────────────────────────────────────────────────────────────┐
-  │  pip install wordfreq                                                       │
-  │  https://github.com/rspeer/wordfreq                                         │
-  │  Zipf scale: 6 ≈ "the", 5 ≈ "love", 4 ≈ "rhyme", 3 ≈ borderline common, │
-  │  2 ≈ rare, <2 ≈ obscure.  We default to cutoff 3.0.                       │
+  │  pip install wordfreq       https://github.com/rspeer/wordfreq             │
+  │  Zipf scale: 6 ≈ "the", 5 ≈ "love", 4 ≈ "rhyme",                         │
+  │  3 ≈ borderline common, 2.5 ≈ uncommon-but-poetic.                        │
   └────────────────────────────────────────────────────────────────────────────┘
 
 Install:
   pip install nltk wordfreq
   python -m nltk.downloader cmudict
 
-Outputs (one TSV per rhyme type + one combined):
+Variant pronunciations:
+  CMUdict marks alternate pronunciations as word(2), word(3), etc.
+  This script uses ALL pronunciations for each word and maps each word into
+  every rhyme family its variants belong to.  A word may therefore appear in
+  multiple families (e.g. "either" in both the /IY/-ending and /AY/-ending
+  families) and may even appear in families of different types (e.g. a word
+  whose primary pronunciation is masculine but whose variant is feminine).
+  This breadth is intentional for poetry / lyrics use.
+
+Outputs:
   rhyme_families_masculine.tsv
   rhyme_families_feminine.tsv
   rhyme_families_dactylic.tsv
-  rhyme_families_all.tsv          ← same rows, adds 'type' column, all together
+  rhyme_families_all.tsv          ← all families with a 'type' column added
 
 Columns:
   type             — masculine | feminine | dactylic
   rhyme_unit       — ARPAbet phonemes from last stressed vowel onward
-  syllables_after  — number of unstressed syllables after the stressed one
+  syllables_after  — count of unstressed syllables following the stressed one
   family_size      — number of qualifying words in the family
   representative   — highest-frequency word in the family
   rep_zipf         — its Zipf score
@@ -42,6 +49,7 @@ Columns:
 """
 
 import csv
+import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -49,40 +57,45 @@ import nltk
 from wordfreq import zipf_frequency
 
 # ── Configuration ─────────────────────────────────────────────────────────────
-ZIPF_CUTOFF     = 3.0   # Minimum Zipf score. Raise for stricter; lower for more.
-MIN_FAMILY_SIZE = 3      # Skip families smaller than this.
-MAX_VARIANTS    = 6      # Max spelling variants per family in output.
-OUT_DIR         = Path(".")   # Output directory. Change as needed.
+ZIPF_CUTOFF     = 2.5   # Minimum Zipf score.
+                         # 3.0 = common words only (~1/million)
+                         # 2.5 = uncommon but poetically acceptable (~0.3/million)
+MIN_FAMILY_SIZE = 3      # Skip families with fewer members than this.
+MAX_VARIANTS    = 6      # Max spelling variants shown per family.
+OUT_DIR         = Path(".")
 # ─────────────────────────────────────────────────────────────────────────────
 
-VOWEL_SET = set('aeiou')
+VOWEL_SET   = set('aeiou')
+_VARIANT_RE = re.compile(r'\(\d+\)$')
 
 
 # ── Phoneme utilities ─────────────────────────────────────────────────────────
 
+def strip_variant(word: str) -> str:
+    return _VARIANT_RE.sub('', word)
+
+
 def is_vowel_ph(ph: str) -> bool:
-    """ARPAbet vowels carry a stress digit (0, 1, or 2) as the final character."""
+    """ARPAbet vowel phonemes end with a stress digit (0, 1, or 2)."""
     return ph[-1] in '012'
 
 
-def count_syllables_in(phonemes) -> int:
-    """Count syllable nuclei (vowel phonemes) in a phoneme sequence."""
+def count_vowels(phonemes) -> int:
     return sum(1 for ph in phonemes if is_vowel_ph(ph))
 
 
 def rhyme_unit_and_type(phonemes: list[str]) -> tuple | None:
     """
-    Extract the rhyme unit and classify it.
+    Extract rhyme unit and classify by type.
 
-    Rhyme unit = all phonemes from the last primary-stressed vowel onward.
-    ('1' suffix in ARPAbet denotes primary stress: 'AE1', 'OW1', etc.)
+    Rhyme unit = all phonemes from the last primary-stressed vowel ('*1') onward.
 
-    Classification by count of vowel phonemes in the rhyme unit:
-      1 → masculine   (the stressed vowel IS the last syllable)
-      2 → feminine    (one unstressed syllable follows the stressed one)
-      3+ → dactylic   (two or more unstressed syllables follow)
+    Type classification by vowel phoneme count in the rhyme unit:
+      1 vowel  → masculine   (stressed vowel is the last syllable nucleus)
+      2 vowels → feminine    (one unstressed syllable trails the stressed one)
+      3+ vowels→ dactylic    (two or more unstressed syllables trail)
 
-    Returns (rhyme_unit_tuple, type_str, syllables_after_stress) or None.
+    Returns (rhyme_unit_tuple, type_str, syllables_after) or None.
     """
     last_stress_idx = None
     for i, ph in enumerate(phonemes):
@@ -93,8 +106,8 @@ def rhyme_unit_and_type(phonemes: list[str]) -> tuple | None:
         return None
 
     unit = tuple(phonemes[last_stress_idx:])
-    vowel_count = count_syllables_in(unit)   # includes the stressed vowel itself
-    syllables_after = vowel_count - 1        # unstressed syllables after stress
+    vowel_count    = count_vowels(unit)
+    syllables_after = vowel_count - 1    # subtract the stressed vowel itself
 
     if vowel_count <= 1:
         rtype = 'masculine'
@@ -110,13 +123,11 @@ def rhyme_unit_and_type(phonemes: list[str]) -> tuple | None:
 
 def ortho_ending(word: str) -> str:
     """
-    Return the orthographic rime: from the last vowel letter onward.
+    Orthographic rime: from the last vowel letter onward.
 
-    Used to group spelling variants within a single phonetic rhyme family, e.g.:
-      /AY1 T/ family: 'night' → 'ight', 'write' → 'ite', 'byte' → 'yte'
-
-    We look for the last vowel in the word.  For words ending in silent 'e',
-    the silent 'e' is included, correctly distinguishing 'ite' from 'it'.
+    Used to surface spelling variants within one phonetic family.
+    E.g. in the /AY1 T/ family: 'night'→'ight', 'write'→'ite', 'byte'→'yte'.
+    Silent final 'e' is included, correctly distinguishing 'ite' from 'it'.
     """
     last_v = -1
     for i, ch in enumerate(word.lower()):
@@ -129,13 +140,12 @@ def ortho_ending(word: str) -> str:
 
 def build_family_row(unit: tuple, members: list, rtype: str) -> dict:
     """
-    Build one output row from a rhyme unit and its sorted member list.
-    members: list of (word, zipf_score), sorted by score descending.
+    Build one output row for a rhyme family.
+    members: [(word, zipf_score), ...] sorted by score descending.
     """
     rep_word, rep_zipf = members[0]
-    syllables_after = count_syllables_in(unit) - 1
+    syllables_after = count_vowels(unit) - 1
 
-    # Best word per orthographic ending
     by_ending: dict[str, tuple] = {}
     for word, z in members:
         ending = ortho_ending(word)
@@ -171,12 +181,13 @@ def write_tsv(rows: list[dict], path: Path, fields: list[str]) -> None:
 def print_top(rows: list[dict], n: int = 20, label: str = "") -> None:
     if label:
         print(f"\n── Top {n} {label} families ──")
-    print(f"{'Rhyme Unit':<26} {'Syl':>3} {'Size':>5}  {'Rep':<14} {'Zipf':>5}  Variants")
-    print('─' * 95)
-    for r in rows[:n]:
-        print(f"{r['rhyme_unit']:<26} {r['syllables_after']:>3} {r['family_size']:>5}  "
-              f"{r['representative']:<14} {r['rep_zipf']:>5}  "
-              f"{r['spelling_variants'][:42]}")
+    print(f"{'Rank':<5} {'Rhyme Unit':<28} {'Syl':>3} {'Size':>5}  "
+          f"{'Rep':<16} {'Zipf':>5}  Variants")
+    print('─' * 100)
+    for i, r in enumerate(rows[:n], 1):
+        print(f"{i:<5} {r['rhyme_unit']:<28} {r['syllables_after']:>3} "
+              f"{r['family_size']:>5}  {r['representative']:<16} "
+              f"{r['rep_zipf']:>5}  {r['spelling_variants'][:40]}")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -186,54 +197,71 @@ def main():
     print("Loading CMUdict (downloading if needed)...")
     nltk.download('cmudict', quiet=True)
     cmu_entries = nltk.corpus.cmudict.entries()
-    print(f"  {len(cmu_entries):,} raw entries.")
+    print(f"  {len(cmu_entries):,} raw entries (including variants).")
 
-    # 2. Deduplicate, filter, classify ────────────────────────────────────────
-    print(f"Filtering (Zipf ≥ {ZIPF_CUTOFF}), extracting rhyme units...")
+    # 2. Collect all pronunciations per canonical word ─────────────────────────
+    print("Collecting all pronunciations per word...")
+    word_pronunciations: dict[str, list[list[str]]] = defaultdict(list)
+    for raw_word, phonemes in cmu_entries:
+        canonical = strip_variant(raw_word).lower()
+        word_pronunciations[canonical].append(phonemes)
 
-    seen = set()
-    by_type: dict[str, dict[tuple, list]] = {
-        'masculine': defaultdict(list),
-        'feminine':  defaultdict(list),
-        'dactylic':  defaultdict(list),
+    # 3. Filter by frequency; classify each (word, pronunciation) pair ─────────
+    print(f"Filtering (Zipf ≥ {ZIPF_CUTOFF}), classifying rhyme types...")
+
+    # by_type[rtype][unit] = {word: zipf_score}
+    by_type: dict[str, dict[tuple, dict[str, float]]] = {
+        'masculine': defaultdict(dict),
+        'feminine':  defaultdict(dict),
+        'dactylic':  defaultdict(dict),
     }
 
-    for word, phonemes in cmu_entries:
-        if word in seen or '(' in word:
-            continue
-        seen.add(word)
-
+    kept, skipped_freq, skipped_stress = 0, 0, 0
+    for word, pron_list in word_pronunciations.items():
         z = zipf_frequency(word, 'en')
         if z < ZIPF_CUTOFF:
+            skipped_freq += 1
             continue
 
-        result = rhyme_unit_and_type(phonemes)
-        if result is None:
-            continue
+        # Track (unit, type) pairs seen for this word to avoid double-counting
+        # when two variant pronunciations map to the same rhyme unit + type.
+        seen_unit_type: set[tuple] = set()
+        placed = False
+        for phonemes in pron_list:
+            result = rhyme_unit_and_type(phonemes)
+            if result is None:
+                skipped_stress += 1
+                continue
+            unit, rtype, _ = result
+            key = (unit, rtype)
+            if key in seen_unit_type:
+                continue
+            seen_unit_type.add(key)
+            by_type[rtype][unit][word] = z
+            placed = True
 
-        unit, rtype, _ = result
-        by_type[rtype][unit].append((word, z))
+        if placed:
+            kept += 1
 
-    total_words = sum(
-        sum(len(v) for v in d.values()) for d in by_type.values()
-    )
-    print(f"  {total_words:,} words retained across all types.")
+    print(f"  {kept:,} words retained  |  {skipped_freq:,} below Zipf  "
+          f"|  {skipped_stress:,} stress-less skipped")
     for rtype, d in by_type.items():
-        print(f"    {rtype:10}: {sum(len(v) for v in d.values()):>6,} words "
-              f"in {len(d):,} potential families")
+        total_members = sum(len(v) for v in d.values())
+        print(f"    {rtype:10}: {total_members:>6,} word-placements "
+              f"across {len(d):,} potential families")
 
-    # 3. Build rows ───────────────────────────────────────────────────────────
+    # 4. Build rows ────────────────────────────────────────────────────────────
     print("\nBuilding and ranking family rows...")
 
-    all_rows   = []
-    type_rows  = {}
+    all_rows:  list[dict] = []
+    type_rows: dict[str, list[dict]] = {}
 
     for rtype, families in by_type.items():
         rows = []
-        for unit, members in families.items():
-            if len(members) < MIN_FAMILY_SIZE:
+        for unit, word_z_map in families.items():
+            if len(word_z_map) < MIN_FAMILY_SIZE:
                 continue
-            members.sort(key=lambda x: x[1], reverse=True)
+            members = sorted(word_z_map.items(), key=lambda x: x[1], reverse=True)
             rows.append(build_family_row(unit, members, rtype))
 
         rows.sort(key=lambda r: (r['family_size'], r['rep_zipf']), reverse=True)
@@ -242,26 +270,25 @@ def main():
 
     all_rows.sort(key=lambda r: (r['family_size'], r['rep_zipf']), reverse=True)
 
-    # 4. Write outputs ────────────────────────────────────────────────────────
+    # 5. Write outputs ─────────────────────────────────────────────────────────
     print("\nWriting output files...")
-
     base_fields = ['rhyme_unit', 'syllables_after', 'family_size',
                    'representative', 'rep_zipf', 'spelling_variants', 'all_words']
     all_fields  = ['type'] + base_fields
 
     for rtype, rows in type_rows.items():
         write_tsv(rows, OUT_DIR / f"rhyme_families_{rtype}.tsv", base_fields)
-
     write_tsv(all_rows, OUT_DIR / "rhyme_families_all.tsv", all_fields)
 
-    # 5. Preview ──────────────────────────────────────────────────────────────
+    # 6. Preview ───────────────────────────────────────────────────────────────
     for rtype, rows in type_rows.items():
         print_top(rows, n=15, label=rtype)
 
     print(f"\nSummary:")
     for rtype, rows in type_rows.items():
-        print(f"  {rtype:10}: {len(rows):,} qualifying families")
-    print(f"  {'combined':10}: {len(all_rows):,} qualifying families")
+        print(f"  {rtype:10}: {len(rows):,} qualifying families "
+              f"(≥{MIN_FAMILY_SIZE} members, Zipf ≥{ZIPF_CUTOFF})")
+    print(f"  {'combined':10}: {len(all_rows):,} qualifying families total")
 
 
 if __name__ == '__main__':
