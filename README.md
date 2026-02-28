@@ -119,48 +119,48 @@ MAX_VARIANTS    = 6      # Max spelling variants shown per family
 
 ## Top 40 most rhymable families (basic script, Zipf ≥ 2.5)
 
-Rank  Rhyme Unit              Size  Representative    Zipf  Spelling variants
-────────────────────────────────────────────────────────────────────────────────────────────────────
-1     EY1 SH AH0 N             575  information       5.43  information (5.4),  corp (4.3),  corp. (4.3),
-2     IY1                      223  be                6.79  be (6.8),  d (5.5),  d. (5.5),  t (5.4),  t. 
-3     EY1 SH AH0 N Z           201  patients          4.91  patients (4.9),  operations (4.9),  operation
-4     UW1                      193  to                7.43  to (7.4),  you (7.0),  new (6.2),  through (5
-5     EY1                      193  a                 7.36  a (7.4),  a. (7.4),  they (6.5),  way (6.0), 
-6     OW1                      140  so                6.52  so (6.5),  know (6.1),  though (5.5),  oh (5.
-7     IY1 Z                    132  these             6.04  these (6.0),  he's (5.6),  d.'s (5.3),  t.'s 
-8     EY1 N                    130  again              5.7  again (5.7),  campaign (5.0),  plane (4.7),  
-9     AY1                      127  i                 7.09  i (7.1),  i. (7.1),  by (6.7),  my (6.6),  wh
-10    IY1 N                    121  between           5.77  between (5.8),  mean (5.5),  scene (5.0),  jo
-11    EH1 L                    111  well              6.03  well (6.0),  l (5.2),  l. (5.2),  hotel (5.0)
-12    AA1 N                     92  on                6.91  on (6.9),  john (5.4),  iran (4.6),  antoine 
-13    EY1 Z                     91  a.'s              5.85  a.'s (5.8),  days (5.6),  days' (5.6),  j.'s 
-14    EH1 S                     89  us                6.04  us (6.0),  's (5.9),  s (5.9),  s. (5.9),  ye
-15    EY1 D                     89  made              5.92  made (5.9),  played (5.2),  paid (5.1),  they
-16    EH1 R                     88  their             6.33  their (6.3),  there (6.3),  wear (4.9),  pray
-17    AO1 R                     87  for               7.01  for (7.0),  your (6.5),  more (6.4),  war (5.
-18    UW1 Z                     85  use               5.81  use (5.8),  news (5.4),  news' (5.4),  u.s (5
-19    AE1 N                     82  an                6.53  an (6.5),  jan. (4.5),  ann (4.3),  anne (4.3
-20    EH1 T                     82  get               6.28  get (6.3),  debt (4.7),  threat (4.6),  cigar
-21    IH1 SH AH0 N              82  position          5.21  position (5.2),  physician (4.2)
-22    IH1 R                     76  year              5.96  year (6.0),  we're (5.4),  career (5.1),  ami
-23    EH1 S T                   75  best              5.84  best (5.8),  expressed (4.5),  breast (4.3), 
-24    AY1 Z                     72  i.'s              5.84  i.'s (5.8),  guys (5.4),  guys' (5.4),  eyes 
-25    AY1 D                     70  side               5.5  side (5.5),  i'd (5.4),  died (5.2),  eid (3.
-26    OW1 Z                     69  those              5.9  those (5.9),  shows (5.2),  shows' (5.2),  go
-27    EY1 T                     69  great             5.88  great (5.9),  state (5.8),  wait (5.3),  m-8 
-28    AA1 R                     65  are               6.74  are (6.7),  our (6.1),  far (5.5),  r (5.3), 
-29    AY1 T                     65  right             5.96  right (6.0),  white (5.5),  beit (3.0),  indi
-30    IY1 N AH0                 65  arena             4.33  arena (4.3)
-31    IH1 N                     64  in                7.27  in (7.3),  in. (7.3),  when (6.4),  inn (4.1)
-32    OW1 N                     63  don't              6.2  don't (6.2),  own (5.7),  phone (5.3),  loan 
-33    IY1 D                     63  need              5.97  need (6.0),  read (5.5),  he'd (4.6),  reid (
-34    IY1 L                     63  feel              5.67  feel (5.7),  real (5.6),  we'll (4.9),  neil 
-35    EY1 L                     61  sale              4.99  sale (5.0),  mail (4.7),  they'll (4.7),  gae
-36    EY1 N Z                   61  remains            4.8  remains (4.8),  campaigns (4.2),  planes (4.2
-37    IH1 L                     60  will              6.45  will (6.5),  until (5.6),  we'll (4.9),  sevi
-38    AA1                       59  law               5.46  law (5.5),  la (5.0),  ah (4.6),  ahh (3.9), 
-39    AE1 N AH0                 59  santa             4.49  santa (4.5),  piano (4.3),  hannah (4.0),  sa
-40    AW1                       57  how               6.24  how (6.2),  thou (4.2),  mao (3.6),  howe (3.
+	Rank  Rhyme Unit              Size  Representative    Zipf  Spelling variants
+	────────────────────────────────────────────────────────────────────────────────────────────────────
+	1     EY1 SH AH0 N             575  information       5.43  information (5.4),  corp (4.3),  corp. (4.3),
+	2     IY1                      223  be                6.79  be (6.8),  d (5.5),  d. (5.5),  t (5.4),  t. 
+	3     EY1 SH AH0 N Z           201  patients          4.91  patients (4.9),  operations (4.9),  operation
+	4     UW1                      193  to                7.43  to (7.4),  you (7.0),  new (6.2),  through (5
+	5     EY1                      193  a                 7.36  a (7.4),  a. (7.4),  they (6.5),  way (6.0), 
+	6     OW1                      140  so                6.52  so (6.5),  know (6.1),  though (5.5),  oh (5.
+	7     IY1 Z                    132  these             6.04  these (6.0),  he's (5.6),  d.'s (5.3),  t.'s 
+	8     EY1 N                    130  again              5.7  again (5.7),  campaign (5.0),  plane (4.7),  
+	9     AY1                      127  i                 7.09  i (7.1),  i. (7.1),  by (6.7),  my (6.6),  wh
+	10    IY1 N                    121  between           5.77  between (5.8),  mean (5.5),  scene (5.0),  jo
+	11    EH1 L                    111  well              6.03  well (6.0),  l (5.2),  l. (5.2),  hotel (5.0)
+	12    AA1 N                     92  on                6.91  on (6.9),  john (5.4),  iran (4.6),  antoine 
+	13    EY1 Z                     91  a.'s              5.85  a.'s (5.8),  days (5.6),  days' (5.6),  j.'s 
+	14    EH1 S                     89  us                6.04  us (6.0),  's (5.9),  s (5.9),  s. (5.9),  ye
+	15    EY1 D                     89  made              5.92  made (5.9),  played (5.2),  paid (5.1),  they
+	16    EH1 R                     88  their             6.33  their (6.3),  there (6.3),  wear (4.9),  pray
+	17    AO1 R                     87  for               7.01  for (7.0),  your (6.5),  more (6.4),  war (5.
+	18    UW1 Z                     85  use               5.81  use (5.8),  news (5.4),  news' (5.4),  u.s (5
+	19    AE1 N                     82  an                6.53  an (6.5),  jan. (4.5),  ann (4.3),  anne (4.3
+	20    EH1 T                     82  get               6.28  get (6.3),  debt (4.7),  threat (4.6),  cigar
+	21    IH1 SH AH0 N              82  position          5.21  position (5.2),  physician (4.2)
+	22    IH1 R                     76  year              5.96  year (6.0),  we're (5.4),  career (5.1),  ami
+	23    EH1 S T                   75  best              5.84  best (5.8),  expressed (4.5),  breast (4.3), 
+	24    AY1 Z                     72  i.'s              5.84  i.'s (5.8),  guys (5.4),  guys' (5.4),  eyes 
+	25    AY1 D                     70  side               5.5  side (5.5),  i'd (5.4),  died (5.2),  eid (3.
+	26    OW1 Z                     69  those              5.9  those (5.9),  shows (5.2),  shows' (5.2),  go
+	27    EY1 T                     69  great             5.88  great (5.9),  state (5.8),  wait (5.3),  m-8 
+	28    AA1 R                     65  are               6.74  are (6.7),  our (6.1),  far (5.5),  r (5.3), 
+	29    AY1 T                     65  right             5.96  right (6.0),  white (5.5),  beit (3.0),  indi
+	30    IY1 N AH0                 65  arena             4.33  arena (4.3)
+	31    IH1 N                     64  in                7.27  in (7.3),  in. (7.3),  when (6.4),  inn (4.1)
+	32    OW1 N                     63  don't              6.2  don't (6.2),  own (5.7),  phone (5.3),  loan 
+	33    IY1 D                     63  need              5.97  need (6.0),  read (5.5),  he'd (4.6),  reid (
+	34    IY1 L                     63  feel              5.67  feel (5.7),  real (5.6),  we'll (4.9),  neil 
+	35    EY1 L                     61  sale              4.99  sale (5.0),  mail (4.7),  they'll (4.7),  gae
+	36    EY1 N Z                   61  remains            4.8  remains (4.8),  campaigns (4.2),  planes (4.2
+	37    IH1 L                     60  will              6.45  will (6.5),  until (5.6),  we'll (4.9),  sevi
+	38    AA1                       59  law               5.46  law (5.5),  la (5.0),  ah (4.6),  ahh (3.9), 
+	39    AE1 N AH0                 59  santa             4.49  santa (4.5),  piano (4.3),  hannah (4.0),  sa
+	40    AW1                       57  how               6.24  how (6.2),  thou (4.2),  mao (3.6),  howe (3.
 
 ---
 
