@@ -10,6 +10,17 @@ This project was designed in collaboration with an AI assistant. The full design
 
 > 🔗 **[Design conversation](https://claude.ai/share/108d6033-f727-45dd-a079-e2024fabc846)**
 
+I, Iiridayn, take full responsibility for this code: I have chosen to publish
+it. On visual inspection it appears straightforward enough, and though I did not
+bother to produce it myself, I share it in the belief that it will be useful to
+others as it was to me (I really just wanted the output). There are some ethical
+uncertainties around AI-produced software; thus I substantially credit Claude
+(I originated only the prompts producing the code) yet bear full responsibility
+for it. I believe this to be a small risk outweighed by the societal benefits,
+and I'd not have spared the time to produce this code and output without AI
+assistance, and thus believe the ethics are also a net positive. This paragraph
+is the only part that I have authored.
+
 ---
 
 ## How it works
