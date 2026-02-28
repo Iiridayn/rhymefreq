@@ -59,7 +59,7 @@ Both are auto-fetched on first run — no manual download needed.
 
 ### Variant pronunciations
 
-CMUdict annotates alternate pronunciations as `word(2)`, `word(3)`, etc. Previous tools typically discard these; this pipeline uses all of them. A word like `either` (pronounced `/iː/` by some speakers and `/aɪ/` by others) will appear in **both** rhyme families, reflecting real creative usage in poetry and lyrics.
+CMUdict annotates alternate pronunciations as `word(2)`, `word(3)`, etc. This pipeline uses all of them. A word like `either` (pronounced `/iː/` by some speakers and `/aɪ/` by others) will appear in **both** rhyme families, reflecting real creative usage in poetry and lyrics.
 
 ---
 
